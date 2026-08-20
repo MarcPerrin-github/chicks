@@ -895,6 +895,21 @@
     .vt-allergen-note--footer {
       margin-top: .5em;
     }
+
+    .vt-allergen-intro{ font-size:.9rem; opacity:.85; line-height:1.6; max-width:640px; }
+    .vt-allergen-list{ list-style:none; padding:0; margin:1.25em 0 0; display:grid; gap:.5em; max-width:640px; }
+    .vt-allergen-list li{ display:flex; justify-content:space-between; gap:1em; padding:.5em 0; border-bottom:1px dashed currentColor; }
+    .vt-allergen-list li span:first-child{ font-weight:600; }
+    .vt-allergen-list li span:last-child{ text-align:right; }
+    .vt-allergen-empty{ font-size:.9rem; opacity:.75; margin-top:1.25em; }
+    .vt-allergen-link{
+      display:inline-block; margin-top:1em; padding:.5em 1.1em;
+      border:1px solid currentColor; border-radius:999px;
+      color:inherit; text-decoration:none; font-size:.85rem; font-weight:600;
+      background:transparent; opacity:.85;
+    }
+    .vt-allergen-link:hover{ opacity:1; }
+    .vt-allergen-note a{ color:inherit; text-decoration:underline; }
   </style>
 </head>
 
@@ -1023,12 +1038,7 @@
       <p id="vt-data-fallback-banner" class="vt-data-fallback-banner" hidden>⚠️ Contenu de démonstration affiché —
         données Google Sheets non connectées ou indisponibles.</p>
 
-      <p class="vt-allergen-note">
-        Nos plats peuvent contenir des traces des 14 allergènes réglementés par l'UE
-        (gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque,
-        céleri, moutarde, graines de sésame, sulfites, lupin, mollusques).
-        Renseignez-vous auprès du personnel pour toute allergie ou intolérance alimentaire.
-      </p>
+      <a class="vt-allergen-link" href="#allergenes">Voir les allergènes par plat →</a>
 
       <div class="tabs" id="tabs">
         <button class="tab active" data-tab="menus">Nos menus</button>
@@ -1280,6 +1290,25 @@
     </div>
   </section>
 
+  <!-- ====== ALLERGÈNES ====== -->
+  <section id="allergenes" aria-labelledby="allergenes-heading">
+    <div class="wrap">
+      <h2 id="allergenes-heading">Allergènes</h2>
+      <p class="vt-allergen-intro">
+        Nos plats peuvent contenir des traces des 14 allergènes réglementés par l'UE
+        (gluten, crustacés, œufs, poissons, arachides, soja, lait, fruits à coque,
+        céleri, moutarde, graines de sésame, sulfites, lupin, mollusques).
+        Détail par plat ci-dessous — renseignez-vous auprès du personnel pour toute
+        allergie ou intolérance alimentaire.
+      </p>
+      <ul id="vt-allergen-list" class="vt-allergen-list" hidden></ul>
+      <p id="vt-allergen-empty" class="vt-allergen-empty">
+        Le détail des allergènes par plat n'est pas encore renseigné pour ce menu —
+        merci de vous renseigner auprès du personnel.
+      </p>
+    </div>
+  </section>
+
   <!-- ====== SAUCE SIGNATURE ====== -->
   <section id="sauces">
     <div class="wrap sauce">
@@ -1404,7 +1433,7 @@
       <p class="copy">Le poulet à ta sauce <span class="dot">·</span> 32 rue de Londres, Paris 9e <span
           class="dot">·</span> Good food, good mood</p>
       <p class="vt-allergen-note vt-allergen-note--footer">
-        Allergènes : liste des 14 allergènes UE disponible sur demande auprès du personnel.
+        <a href="#allergenes">Allergènes : détail par plat</a>
       </p>
     </div>
   </footer>
@@ -1513,13 +1542,17 @@
     /* ---------- Reconstruction du menu ---------- */
     function renderMenu(items) {
       const cats = []; const map = {};
+      const allergenDishes = [];
       items.forEach(it => {
         const cat = pick(it, 'catégorie', 'categorie', 'category', 'rubrique');
         const nom = pick(it, 'nom', 'name', 'plat');
+        const allergenes = pick(it, 'allergenes', 'allergènes');
+        if (nom && allergenes) allergenDishes.push({ name: nom, allergenes });
         if (!cat || !nom) return;
         if (!map[cat]) { map[cat] = []; cats.push(cat); }
         map[cat].push(it);
       });
+      renderAllergenList(allergenDishes);
       if (!cats.length) return false;
 
       tabsEl.innerHTML = cats.map((c, i) =>
@@ -1536,6 +1569,23 @@
         return `<div class="menu-panel${i === 0 ? ' active' : ''}" data-panel="${slug(c)}"><div class="items">${rows}</div></div>`;
       }).join('');
       return true;
+    }
+
+    /* ---------- Liste des allergènes par plat ---------- */
+    function renderAllergenList(dishes) {
+      const list = document.getElementById('vt-allergen-list');
+      const empty = document.getElementById('vt-allergen-empty');
+      if (!list || !empty) return;
+      if (!dishes || !dishes.length) { list.hidden = true; empty.hidden = false; return; }
+      list.innerHTML = '';
+      dishes.forEach(function (d) {
+        const li = document.createElement('li');
+        const nm = document.createElement('span'); nm.textContent = d.name;
+        const al = document.createElement('span'); al.textContent = d.allergenes;
+        li.appendChild(nm); li.appendChild(al);
+        list.appendChild(li);
+      });
+      list.hidden = false; empty.hidden = true;
     }
 
     /* ---------- Reconstruction des horaires ---------- */
