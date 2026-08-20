@@ -188,6 +188,15 @@
       align-items: center
     }
 
+    .nav-cta {
+      display: flex;
+      align-items: center
+    }
+
+    .vt-nav-cta-compact {
+      display: none
+    }
+
     .navlinks a:not(.btn) {
       font-size: 14px;
       color: var(--cream-dim);
@@ -846,6 +855,21 @@
       }
     }
 
+    /* Narrower than the nav-links collapse breakpoint above: only switch the
+       nav CTA to an icon once there's genuinely not enough room for its text
+       next to the logo + burger. Full text stays visible between 480–900px. */
+    @media(max-width:480px) {
+      .vt-nav-cta-full {
+        display: none
+      }
+
+      .vt-nav-cta-compact {
+        display: inline-flex;
+        padding: .6em .8em;
+        font-size: 1.1rem
+      }
+    }
+
     @media(prefers-reduced-motion:reduce) {
       * {
         animation: none !important;
@@ -904,10 +928,9 @@
     .vt-allergen-none{ opacity:.7; }
     .vt-allergen-empty{ font-size:.9rem; opacity:.75; margin-top:1.25em; }
     .vt-allergen-link{
-      display:inline-block; margin-top:1em; padding:.5em 1.1em;
-      border:1px solid currentColor; border-radius:999px;
-      color:inherit; text-decoration:none; font-size:.85rem; font-weight:600;
-      background:transparent; opacity:.85;
+      display:inline-block; margin-top:2em;
+      color:inherit; text-decoration:underline; font-size:.85rem; font-weight:600;
+      opacity:.75;
     }
     .vt-allergen-link:hover{ opacity:1; }
     .vt-allergen-note a{ color:inherit; text-decoration:underline; }
@@ -929,8 +952,12 @@
           <a href="#sauces">Les sauces</a>
           <a href="#galerie">Galerie</a>
           <a href="#infos">Nous trouver</a>
+        </div>
+        <div class="nav-cta">
           <a href="https://deliveroo.fr/fr/menu/paris/9eme-opera/chicks-saint-lazare" target="_blank" rel="noopener"
-            class="btn btn-primary">Commander</a>
+            class="btn btn-primary vt-nav-cta-full">Commander</a>
+          <a href="https://deliveroo.fr/fr/menu/paris/9eme-opera/chicks-saint-lazare" target="_blank" rel="noopener"
+            class="btn btn-primary vt-nav-cta-compact" aria-label="Commander sur Deliveroo">🛍️</a>
         </div>
         <button class="menu-toggle" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"
           aria-controls="navlinks">☰</button>
@@ -1038,8 +1065,6 @@
 
       <p id="vt-data-fallback-banner" class="vt-data-fallback-banner" hidden>⚠️ Contenu de démonstration affiché —
         données Google Sheets non connectées ou indisponibles.</p>
-
-      <a class="vt-allergen-link" href="#allergenes">Voir les allergènes par plat →</a>
 
       <div class="tabs" id="tabs">
         <button class="tab active" data-tab="menus">Nos menus</button>
@@ -1288,6 +1313,8 @@
       </div><!-- /#menu-panels -->
 
       <p class="menu-note">// Carte susceptible d'évoluer · disponibilités en temps réel sur la commande en ligne</p>
+
+      <a class="vt-allergen-link" href="#allergenes">Voir les allergènes par plat →</a>
     </div>
   </section>
 
